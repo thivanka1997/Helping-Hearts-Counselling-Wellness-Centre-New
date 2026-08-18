@@ -575,7 +575,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
               <div className="flex gap-3 items-center">
                 <div className="w-12 h-12 rounded-full border border-slate-300 overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center">
                   <img
-                    src={siteForm.logoUrl || '/src/assets/images/helping_hearts_logo_1786214208419.jpg'}
+                    src={siteForm.logoUrl || '/assets/images/helping_hearts_logo_1786214208419.jpg'}
                     alt="Logo preview"
                     className="w-full h-full object-contain"
                     referrerPolicy="no-referrer"
@@ -585,7 +585,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                   type="text"
                   value={siteForm.logoUrl || ''}
                   onChange={(e) => setSiteForm({ ...siteForm, logoUrl: e.target.value })}
-                  placeholder="/src/assets/images/helping_hearts_logo_1786214208419.jpg"
+                  placeholder="/assets/images/helping_hearts_logo_1786214208419.jpg"
                   className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-mono"
                 />
                 <label className="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl border border-slate-300 cursor-pointer shrink-0 flex items-center gap-1.5">
