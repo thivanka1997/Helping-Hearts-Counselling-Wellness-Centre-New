@@ -89,7 +89,7 @@ export const AboutUs: React.FC<AboutUsProps> = ({ lecturers, onOpenAppointment, 
               </div>
               <div className="bg-slate-950/70 p-2.5 rounded-xl border border-amber-400/20 text-center">
                 <span className="text-amber-300 font-bold block">SRILNAC</span>
-                <span className="text-slate-300 text-[10px]">National Assoc Member</span>
+                <span className="text-slate-300 text-[10px]">Member</span>
               </div>
               <div className="bg-slate-950/70 p-2.5 rounded-xl border border-amber-400/20 text-center">
                 <span className="text-amber-300 font-bold block">ACCPH (UK)</span>
