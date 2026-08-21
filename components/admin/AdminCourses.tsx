@@ -30,7 +30,7 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
       shortDesc: 'Comprehensive diploma covering clinical assessment and therapy.',
       description: 'Comprehensive diploma covering clinical assessment and therapy for advanced students.',
       category: 'Diploma',
-      duration: '12 Months',
+      duration: '4 Months',
       schedule: 'Saturdays 9:00 AM - 4:00 PM',
       fee: 145000,
       currency: 'LKR',
@@ -143,7 +143,8 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
               <p className="text-xs text-slate-600 leading-relaxed">{crs.shortDesc}</p>
               <div className="text-xs text-slate-500 space-y-1 pt-2 border-t border-slate-100">
                 <p>Lecturer: <strong>{crs.lecturerName}</strong></p>
-                <p>Duration &amp; Schedule: <strong>{crs.duration} ({crs.schedule})</strong></p>
+                <p>Duration: <strong className="text-teal-900">{crs.duration}</strong></p>
+                <p>Schedule: <strong>{crs.schedule}</strong></p>
               </div>
             </div>
 
@@ -241,7 +242,7 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 uppercase mb-1">Category</label>
                   <select
@@ -253,6 +254,23 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
                     <option value="Certificate">Certificate</option>
                     <option value="Advanced Diploma">Advanced Diploma</option>
                     <option value="Short Course">Short Course</option>
+                    <option value="Diploma Programs">Diploma Programs</option>
+                    <option value="Certificate Programs">Certificate Programs</option>
+                    <option value="Specialist Courses">Specialist Courses</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Level</label>
+                  <select
+                    value={editingCourse.level || 'All Levels'}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, level: e.target.value as any })}
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                  >
+                    <option value="All Levels">All Levels</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
                   </select>
                 </div>
 
@@ -268,7 +286,7 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 uppercase mb-1">Assigned Lecturer</label>
                   <select
@@ -290,13 +308,26 @@ export const AdminCourses: React.FC<AdminCoursesProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 uppercase mb-1">Duration &amp; Schedule</label>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Course Duration *</label>
                   <input
                     type="text"
-                    value={editingCourse.schedule}
+                    value={editingCourse.duration || ''}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
+                    placeholder="e.g. 4 Months or 4 Months (16 Weeks)"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-teal-900 focus:ring-2 focus:ring-teal-600 bg-teal-50/30"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 uppercase mb-1">Class Schedule *</label>
+                  <input
+                    type="text"
+                    value={editingCourse.schedule || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, schedule: e.target.value })}
                     placeholder="e.g. Saturdays 9:00 AM - 4:00 PM"
                     className="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-teal-600"
+                    required
                   />
                 </div>
               </div>
