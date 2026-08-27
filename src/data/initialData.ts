@@ -483,6 +483,44 @@ export const initialCourses: Course[] = [
     modulesCount: 3,
     enrolledStudentsCount: 15,
     createdAt: '2026-02-15'
+  },
+  {
+    id: 'crs-5',
+    title: 'Certificate in Professional Counselling Skills',
+    slug: 'certificate-professional-counselling-skills',
+    shortDesc: 'A 4-month intensive certificate programme in Professional Counselling Skills — September Group (Batch 03 Sinhala & Batch 04 Tamil). Gain real patient training, psychotherapy methods, and expert mentorship to launch your psychology career.',
+    description: 'This is a special opportunity to gain the Counselling Skills experience you need to start your psychology career! Through this 4-month training you will identify psychotherapy methods, train with real patients, and get advice and mentorship from experts in the field. Even after the course is over, participants can join counselling workshops conducted by Helping Hearts and receive valuable service letters at the end of each workshop. Conducted in Sinhala & Tamil medium, in collaboration with CIMS Campus. Bonus: Free Special Needs One-Day Workshop with Valuable Certificate included.\n\nCourse Content: Introduction to counselling • Identification of mental illnesses • Counselling skills training • Awareness of counselling ethics • Psychotherapist training • Counseling interventions for Addictions • Training on caring for inpatient mental patients • How to conduct counselling while resolving language problems • Awareness of the laws required during counselling.\n\nFor Enquiries: 0742344251 (Nirmani - Coordinator)\nSinhala Medium WhatsApp (Batch 03): https://chat.whatsapp.com/Fi7hEZrKtcV7QI13t3y7Ba\nTamil Medium WhatsApp (Batch 04): https://chat.whatsapp.com/BCUTS3E74scLpLzAyMXJpy',
+    image: '/assets/images/cert_professional_counselling_skills.jpg',
+    lecturerId: 'lec-1',
+    lecturerName: 'Ms. Ramsina Farvin Jelaldeen & Panel',
+    duration: '4 Months',
+    schedule: 'Sept 9 (Sinhala – Batch 03) | Sept 11 (Tamil – Batch 04) | 8:00 PM – 10:30 PM | Online & Physical',
+    fee: 30000,
+    currency: 'LKR',
+    category: 'Certificate Programs',
+    level: 'Beginner',
+    status: 'Published',
+    outcomes: [
+      'Identify psychotherapy methods used in clinical practice',
+      'Train with real patients under expert supervision',
+      'Get advice and mentorship from leading psychology professionals',
+      'Participate in post-course counselling workshops by Helping Hearts',
+      'Receive valuable service letters after each workshop',
+      'Introduction to counselling & identification of mental illnesses',
+      'Counselling skills training & psychotherapist training',
+      'Awareness of counselling ethics and legal requirements',
+      'Counseling interventions for Addictions',
+      'Training on caring for inpatient mental patients',
+      'How to conduct counselling while resolving language barriers'
+    ],
+    requirements: [
+      'Students currently studying psychology and counselling',
+      'Professionals in the field of counselling',
+      'Open to all with an interest in starting a psychology career'
+    ],
+    modulesCount: 8,
+    enrolledStudentsCount: 0,
+    createdAt: '2026-08-27'
   }
 ];
 

@@ -122,6 +122,25 @@ export const Home: React.FC<HomeProps> = ({
                   <p className="text-xs text-slate-300">Clients Helped</p>
                 </div>
               </div>
+
+              {/* CIMS Campus Collaboration Badge */}
+              <div className="pt-5 flex items-center justify-center lg:justify-start">
+                <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm hover:bg-white/15 transition-all group">
+                  <div className="w-10 h-10 rounded-full bg-white p-0.5 shadow-md shrink-0 overflow-hidden">
+                    <img
+                      src="https://res.cloudinary.com/f5l8xk5o/image/upload/v1787801762/Media_43.jpg"
+                      alt="CIMS Campus Logo"
+                      className="w-full h-full object-contain rounded-full"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-semibold text-teal-300 uppercase tracking-wider leading-none mb-0.5">In Collaboration with</p>
+                    <p className="text-sm font-bold text-white leading-tight">CIMS Campus</p>
+                    <p className="text-[10px] text-slate-400 leading-none">Ceylon Institute of Management Sciences</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Feature Card */}
