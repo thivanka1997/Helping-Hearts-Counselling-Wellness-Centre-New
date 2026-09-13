@@ -9,7 +9,7 @@ const LessonSchema = new Schema({
   resources: [{
     id: { type: String },
     title: { type: String },
-    type: { type: String, enum: ['PDF', 'DOC', 'PPT', 'LINK'] },
+    type: { type: String, enum: ['PDF', 'DOC', 'PPT', 'LINK', 'VIDEO'] },
     url: { type: String },
     description: { type: String }
   }],

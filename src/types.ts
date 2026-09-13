@@ -67,7 +67,7 @@ export interface ClientAppointment {
 export interface LessonResource {
   id: string;
   title: string;
-  type: 'PDF' | 'DOC' | 'PPT' | 'LINK';
+  type: 'PDF' | 'DOC' | 'PPT' | 'LINK' | 'VIDEO';
   url: string;
   description?: string;
 }

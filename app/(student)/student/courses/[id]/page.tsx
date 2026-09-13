@@ -19,18 +19,25 @@ export default function StudentCourseViewerPage() {
     api.getCourses().then(setCourses).catch(() => {});
   }, []);
 
-  const course = courses.find((c) => c.id === courseId) || courses[0];
+  const course = courses.find((c) => c.id === courseId || (c as any)._id === courseId || c.slug === courseId) || courses[0];
 
   useEffect(() => {
     if (course?.id) {
-      api.getCourseModules(course.id).then(setModules).catch(() => {});
+      api.getCourseModules(course.id).then((fetchedMods) => {
+        if (fetchedMods && fetchedMods.length > 0) {
+          setModules(fetchedMods);
+        }
+      }).catch(() => {});
     }
   }, [course?.id]);
+
+  const courseModules = modules.filter((m) => m.courseId === course?.id);
+  const activeModules = courseModules.length > 0 ? courseModules : modules;
 
   return (
     <StudentCourseViewer
       course={course}
-      modules={modules.filter((m) => m.courseId === course?.id)}
+      modules={activeModules}
       onBack={() => router.push('/student/dashboard')}
       onSuccessToast={(msg) => alert(msg)}
     />

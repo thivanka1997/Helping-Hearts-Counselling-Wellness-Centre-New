@@ -5,6 +5,7 @@ import {
   Lecturer,
   Course,
   CourseModule,
+  LessonResource,
   StudentRegistration,
   AttendanceRecord,
   EventWorkshop,
@@ -121,6 +122,12 @@ export const api = {
     fetchJson<{ success: boolean }>(`/api/courses/${id}`, { method: 'DELETE' }),
   getCourseModules: (courseId: string) =>
     fetchJson<CourseModule[]>(`/api/courses/${courseId}/modules`, undefined, initialCourseModules.filter(m => m.courseId === courseId)),
+  addCourseResource: (courseId: string, data: { title: string; type: string; url: string; description?: string; moduleId?: string }) =>
+    fetchJson<{ success: boolean; module?: CourseModule; resource?: LessonResource }>(`/api/courses/${courseId}/modules`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }),
 
   // Student Registrations
   getRegistrations: () => fetchJson<StudentRegistration[]>('/api/registrations', undefined, initialRegistrations),
