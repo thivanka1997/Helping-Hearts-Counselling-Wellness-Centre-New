@@ -89,7 +89,7 @@ export const api = {
 
   // Lecturers
   getLecturers: () => fetchJson<Lecturer[]>('/api/lecturers', undefined, initialLecturers),
-  createLecturer: (data: Omit<Lecturer, 'id' | 'displayOrder'>) =>
+  createLecturer: (data: Partial<Lecturer>) =>
     fetchJson<{ success: boolean; lecturer: Lecturer }>('/api/lecturers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { Lecturer, Course } from '@/src/types';
-import { UserCheck, Plus, Edit3, Trash2, Eye, Mail, Phone, BookOpen, Award, Upload, X, Save, Search, User, Link, KeyRound, Lock } from 'lucide-react';
+import { UserCheck, Plus, Edit3, Trash2, Eye, EyeOff, Mail, Phone, BookOpen, Award, Upload, X, Save, Search, User, Link, KeyRound, Lock, Copy, Check, Sparkles, ShieldCheck } from 'lucide-react';
 
 interface AdminLecturersProps {
   lecturers: Lecturer[];
@@ -28,6 +28,14 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [lecturerToDelete, setLecturerToDelete] = useState<Lecturer | null>(null);
 
+  // Profile Modal Inline Credentials State
+  const [isEditingCredentials, setIsEditingCredentials] = useState(false);
+  const [credUsername, setCredUsername] = useState('');
+  const [credPassword, setCredPassword] = useState('');
+  const [showCredPassword, setShowCredPassword] = useState(false);
+  const [showEditorPassword, setShowEditorPassword] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
   // Form State
   const defaultFormState: Partial<Lecturer> = {
     name: '',
@@ -45,6 +53,59 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
   };
 
   const [formState, setFormState] = useState<Partial<Lecturer>>(defaultFormState);
+
+  const generatePassword = () => {
+    const num = Math.floor(100 + Math.random() * 900);
+    const chars = '!@#$%&*';
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    return `Lec@2026${char}${num}`;
+  };
+
+  const suggestUsername = (name?: string, email?: string) => {
+    if (name) {
+      const clean = name
+        .toLowerCase()
+        .replace(/^(dr|mr|mrs|ms|miss|prof)\.?\s+/i, '')
+        .replace(/[^a-z0-9]/g, '.')
+        .replace(/\.+/g, '.')
+        .replace(/^\.|\.$/g, '');
+      if (clean) return clean;
+    }
+    if (email && email.includes('@')) {
+      return email.split('@')[0].toLowerCase();
+    }
+    return `lecturer_${Date.now().toString().slice(-4)}`;
+  };
+
+  const copyToClipboard = (text: string, fieldName: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(null), 2000);
+    }
+  };
+
+  const openViewModal = (lec: Lecturer) => {
+    setViewingLecturer(lec);
+    setCredUsername(lec.username || suggestUsername(lec.name, lec.email));
+    setCredPassword(lec.password || '');
+    setIsEditingCredentials(false);
+    setShowCredPassword(false);
+  };
+
+  const handleSaveInlineCredentials = () => {
+    if (!viewingLecturer) return;
+    const finalUsername = credUsername.trim() || suggestUsername(viewingLecturer.name, viewingLecturer.email);
+    const updated: Lecturer = {
+      ...viewingLecturer,
+      username: finalUsername,
+      password: credPassword.trim()
+    };
+    onSaveLecturer(updated);
+    setViewingLecturer(updated);
+    setIsEditingCredentials(false);
+    onSuccessToast?.(`Login credentials saved for ${updated.name}! (Username: ${finalUsername})`);
+  };
 
   // Filtered lecturers
   const filteredLecturers = lecturers.filter(
@@ -216,6 +277,18 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
                       <Mail className="w-3 h-3 text-slate-400 shrink-0" />
                       <span className="truncate">{lec.email}</span>
                     </div>
+                    <div className="pt-1 flex items-center gap-1.5 flex-wrap">
+                      {lec.username ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono bg-purple-50 text-purple-800 border border-purple-200 px-2 py-0.5 rounded-lg shadow-2xs">
+                          <KeyRound className="w-2.5 h-2.5 text-purple-600" />
+                          <span className="truncate">Login: {lec.username}</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                          Login Not Set
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -263,8 +336,8 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
               {/* Action Buttons */}
               <div className="px-6 py-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
                 <button
-                  onClick={() => setViewingLecturer(lec)}
-                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 flex items-center gap-1.5 shadow-2xs"
+                  onClick={() => openViewModal(lec)}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 flex items-center gap-1.5 shadow-2xs cursor-pointer"
                 >
                   <Eye className="w-3.5 h-3.5 text-slate-500" /> View Profile
                 </button>
@@ -331,6 +404,183 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
                     <Phone className="w-4 h-4 text-teal-700" /> {viewingLecturer.phone}
                   </p>
                 </div>
+              </div>
+
+              {/* Faculty Portal Login Credentials Section */}
+              <div className="bg-gradient-to-r from-purple-50 via-indigo-50/70 to-purple-50 p-4 rounded-2xl border border-purple-200 space-y-3 shadow-2xs">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <KeyRound className="w-4 h-4 text-purple-700" />
+                    <span className="font-bold text-purple-950 uppercase text-[11px] tracking-wide">Faculty Portal Login Credentials</span>
+                  </div>
+                  {!isEditingCredentials && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingCredentials(true)}
+                      className="px-3 py-1 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all shadow-2xs active:scale-95"
+                    >
+                      <Edit3 className="w-3 h-3 text-amber-300" />
+                      <span>{viewingLecturer.username ? 'Edit Credentials' : 'Create Credentials'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {isEditingCredentials ? (
+                  /* Inline credentials editor */
+                  <div className="space-y-3 bg-white p-4 rounded-xl border border-purple-200 shadow-2xs animate-in fade-in duration-150">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-bold text-slate-700 uppercase text-[10px]">User ID / Username *</label>
+                          <button
+                            type="button"
+                            onClick={() => setCredUsername(suggestUsername(viewingLecturer.name, viewingLecturer.email))}
+                            className="text-[10px] text-purple-700 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                          >
+                            <Sparkles className="w-3 h-3" /> Auto-Suggest
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2 border border-slate-300 rounded-xl px-2.5 py-2 bg-slate-50 focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-purple-500">
+                          <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <input
+                            type="text"
+                            value={credUsername}
+                            onChange={(e) => setCredUsername(e.target.value)}
+                            placeholder="e.g. dr_kavinda or lecturer.name"
+                            className="w-full text-xs font-semibold bg-transparent outline-none text-slate-900"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-bold text-slate-700 uppercase text-[10px]">Portal Password *</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newPass = generatePassword();
+                              setCredPassword(newPass);
+                              setShowCredPassword(true);
+                            }}
+                            className="text-[10px] text-purple-700 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                          >
+                            <Sparkles className="w-3 h-3" /> Generate Password
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2 border border-slate-300 rounded-xl px-2.5 py-2 bg-slate-50 focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-purple-500">
+                          <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <input
+                            type={showCredPassword ? 'text' : 'password'}
+                            value={credPassword}
+                            onChange={(e) => setCredPassword(e.target.value)}
+                            placeholder="Set secure password"
+                            className="w-full text-xs font-mono font-semibold bg-transparent outline-none text-slate-900"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowCredPassword(!showCredPassword)}
+                            className="text-slate-400 hover:text-slate-600 cursor-pointer shrink-0"
+                            title={showCredPassword ? 'Hide password' : 'Show password'}
+                          >
+                            {showCredPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-purple-100">
+                      <span className="text-[10px] text-slate-500 italic">Credentials will be active for lecturer portal login immediately.</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCredUsername(viewingLecturer.username || '');
+                            setCredPassword(viewingLecturer.password || '');
+                            setIsEditingCredentials(false);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSaveInlineCredentials}
+                          className="px-4 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                        >
+                          <Save className="w-3.5 h-3.5 text-amber-300" />
+                          <span>Save Credentials</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Display mode */
+                  <div>
+                    {viewingLecturer.username ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3.5 rounded-xl border border-purple-200">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">User ID / Username</span>
+                          <div className="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                            <span className="font-mono font-bold text-purple-900 text-xs truncate">{viewingLecturer.username}</span>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(viewingLecturer.username!, 'username')}
+                              className="text-slate-400 hover:text-purple-700 cursor-pointer shrink-0"
+                              title="Copy username"
+                            >
+                              {copiedField === 'username' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">Password</span>
+                          <div className="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                            <span className="font-mono font-bold text-slate-900 text-xs">
+                              {viewingLecturer.password ? (showCredPassword ? viewingLecturer.password : '••••••••••••') : '(Not configured)'}
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {viewingLecturer.password && (
+                                <button
+                                  type="button"
+                                  onClick={() => setShowCredPassword(!showCredPassword)}
+                                  className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                                  title={showCredPassword ? 'Hide password' : 'Show password'}
+                                >
+                                  {showCredPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                </button>
+                              )}
+                              {viewingLecturer.password && (
+                                <button
+                                  type="button"
+                                  onClick={() => copyToClipboard(viewingLecturer.password!, 'password')}
+                                  className="text-slate-400 hover:text-purple-700 cursor-pointer"
+                                  title="Copy password"
+                                >
+                                  {copiedField === 'password' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-0.5">
+                          <p className="text-xs font-bold text-amber-900">⚠️ No Portal Credentials Created Yet</p>
+                          <p className="text-[11px] text-amber-800">This lecturer cannot log into the Faculty Dashboard until a User ID and password are created.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingCredentials(true)}
+                          className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shrink-0 cursor-pointer shadow-2xs self-start sm:self-auto"
+                        >
+                          Create Login Now
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -539,47 +789,93 @@ export const AdminLecturers: React.FC<AdminLecturersProps> = ({
 
               {/* Portal Credentials Section */}
               <div className="bg-purple-50 p-4 rounded-2xl border border-purple-200 space-y-3">
-                <div className="flex items-center gap-2">
-                  <KeyRound className="w-4 h-4 text-purple-700" />
-                  <label className="block font-bold text-purple-900 uppercase text-xs">Portal Login Credentials</label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <KeyRound className="w-4 h-4 text-purple-700" />
+                    <label className="block font-bold text-purple-900 uppercase text-xs">Faculty Portal Login Credentials</label>
+                  </div>
+                  <span className="text-[10px] text-purple-700 font-semibold bg-purple-100 px-2.5 py-0.5 rounded-full border border-purple-300">
+                    Faculty Dashboard Access
+                  </span>
                 </div>
-                <p className="text-[11px] text-purple-700">Assign a username and password for this lecturer to log into the Lecturer Portal.</p>
+                <p className="text-[11px] text-purple-700">Assign a User ID / username and password so this lecturer can log into the faculty portal.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 uppercase mb-1">Username</label>
-                    <div className="flex items-center gap-2 border border-slate-300 rounded-xl overflow-hidden bg-white">
-                      <span className="pl-2.5 shrink-0"><User className="w-3.5 h-3.5 text-slate-400" /></span>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block font-bold text-slate-700 uppercase text-[10px]">User ID / Username</label>
+                      <button
+                        type="button"
+                        onClick={() => setFormState({ ...formState, username: suggestUsername(formState.name, formState.email) })}
+                        className="text-[10px] text-purple-700 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                      >
+                        <Sparkles className="w-3 h-3" /> Auto-Suggest
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 border border-slate-300 rounded-xl overflow-hidden bg-white px-2.5 py-2 focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-purple-500">
+                      <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <input
                         type="text"
                         value={formState.username || ''}
                         onChange={(e) => setFormState({ ...formState, username: e.target.value })}
-                        placeholder="e.g. dr_kavinda"
-                        className="flex-1 p-2.5 text-xs bg-transparent focus:outline-none"
+                        placeholder="e.g. dr_kavinda or lecturer.name"
+                        className="flex-1 text-xs bg-transparent focus:outline-none text-slate-900 font-semibold"
                         autoComplete="off"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 uppercase mb-1">Password</label>
-                    <div className="flex items-center gap-2 border border-slate-300 rounded-xl overflow-hidden bg-white">
-                      <span className="pl-2.5 shrink-0"><Lock className="w-3.5 h-3.5 text-slate-400" /></span>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block font-bold text-slate-700 uppercase text-[10px]">Password</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newPass = generatePassword();
+                          setFormState({ ...formState, password: newPass });
+                          setShowEditorPassword(true);
+                        }}
+                        className="text-[10px] text-purple-700 font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                      >
+                        <Sparkles className="w-3 h-3" /> Generate Password
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 border border-slate-300 rounded-xl overflow-hidden bg-white px-2.5 py-2 focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-purple-500">
+                      <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <input
-                        type="text"
+                        type={showEditorPassword ? 'text' : 'password'}
                         value={formState.password || ''}
                         onChange={(e) => setFormState({ ...formState, password: e.target.value })}
-                        placeholder="Set a secure password"
-                        className="flex-1 p-2.5 text-xs bg-transparent focus:outline-none font-mono"
+                        placeholder="Set or generate secure password"
+                        className="flex-1 text-xs bg-transparent focus:outline-none font-mono text-slate-900 font-semibold"
                         autoComplete="new-password"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowEditorPassword(!showEditorPassword)}
+                        className="text-slate-400 hover:text-slate-600 cursor-pointer shrink-0"
+                      >
+                        {showEditorPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
                   </div>
                 </div>
                 {formState.username && (
-                  <div className="flex items-center gap-2 p-2.5 bg-white border border-purple-200 rounded-xl text-[11px]">
-                    <span className="text-purple-700 font-bold">Login Preview:</span>
-                    <span className="font-mono text-slate-700">Username: <strong>{formState.username}</strong></span>
-                    <span className="text-slate-400">|</span>
-                    <span className="font-mono text-slate-700">Pass: <strong>{formState.password || '(not set)'}</strong></span>
+                  <div className="flex items-center justify-between gap-2 p-2.5 bg-white border border-purple-200 rounded-xl text-[11px]">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="text-purple-700 font-bold">Login Preview:</span>
+                      <span className="font-mono text-slate-700">User: <strong>{formState.username}</strong></span>
+                      <span className="text-slate-400">|</span>
+                      <span className="font-mono text-slate-700">Pass: <strong>{formState.password ? (showEditorPassword ? formState.password : '••••••••') : '(not set)'}</strong></span>
+                    </div>
+                    {formState.password && (
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(`Username: ${formState.username}\nPassword: ${formState.password}`, 'editor_both')}
+                        className="text-purple-700 font-bold hover:underline flex items-center gap-1 shrink-0 cursor-pointer"
+                      >
+                        {copiedField === 'editor_both' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>Copy Details</span>
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

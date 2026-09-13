@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import Registration from "@/models/Registration";
-import { initialUsers, initialRegistrations } from "@/src/data/initialData";
+import Lecturer from "@/models/Lecturer";
+import { initialUsers, initialRegistrations, initialLecturers } from "@/src/data/initialData";
 
 /**
  * POST /api/auth/login
@@ -65,6 +66,34 @@ export async function POST(req: NextRequest) {
     console.warn("[/api/auth/login] DB User lookup failed, trying fallback:", e);
   }
 
+  // 1b. Try MongoDB Lecturer collection (case-insensitive for username/email/name)
+  if (!user) {
+    try {
+      await connectToDatabase();
+      const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const ciRegex = { $regex: new RegExp(`^${escaped}$`, "i") };
+      const dbLec = await Lecturer.findOne({
+        $or: [
+          { username: ciRegex },
+          { email: ciRegex },
+          { id: identifier },
+          { name: ciRegex }
+        ]
+      }).lean();
+
+      if (dbLec) {
+        user = {
+          id: (dbLec as any).userId || (dbLec as any).id,
+          name: (dbLec as any).name,
+          email: (dbLec as any).email,
+          role: "LECTURER"
+        };
+      }
+    } catch (e) {
+      console.warn("[/api/auth/login] DB Lecturer lookup failed:", e);
+    }
+  }
+
   // 2. Try MongoDB Registration collection (case-insensitive for username/email/name)
   if (!user) {
     try {
@@ -110,6 +139,20 @@ export async function POST(req: NextRequest) {
         email: foundReg.email,
         role: "STUDENT",
       };
+    }
+  }
+
+  // 3b. Fallback: search initialLecturers
+  if (!user) {
+    const foundLec = initialLecturers.find(
+      (l) =>
+        (l as any).username?.toLowerCase() === identifier ||
+        l.email.toLowerCase() === identifier ||
+        l.name.toLowerCase() === identifier ||
+        l.id.toLowerCase() === identifier
+    );
+    if (foundLec) {
+      user = { id: foundLec.id, name: foundLec.name, email: foundLec.email, role: "LECTURER" };
     }
   }
 

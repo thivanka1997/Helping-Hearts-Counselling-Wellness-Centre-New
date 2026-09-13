@@ -34,8 +34,13 @@ export async function POST(req: Request) {
     // Sync into User collection in MongoDB
     try {
       const lecUserId = newLecturer.userId || `usr_${lecId}`;
+      const lecUsername = newLecturer.username?.trim() || (newLecturer.email ? newLecturer.email.split('@')[0] : undefined);
+      const userFindConditions: any[] = [{ id: lecUserId }];
+      if (newLecturer.email) userFindConditions.push({ email: newLecturer.email });
+      if (lecUsername) userFindConditions.push({ username: lecUsername });
+
       await User.findOneAndUpdate(
-        { $or: [{ id: lecUserId }, { email: newLecturer.email }] },
+        { $or: userFindConditions },
         {
           id: lecUserId,
           name: newLecturer.name,
@@ -43,7 +48,9 @@ export async function POST(req: Request) {
           role: 'LECTURER',
           phone: newLecturer.phone,
           avatar: newLecturer.photo,
-          username: newLecturer.email ? newLecturer.email.split('@')[0] : undefined,
+          username: lecUsername,
+          password: newLecturer.password || undefined,
+          assignedPassword: newLecturer.password || undefined,
           status: 'ACTIVE'
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }

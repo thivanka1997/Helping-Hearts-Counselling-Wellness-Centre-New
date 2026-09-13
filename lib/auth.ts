@@ -4,7 +4,8 @@ import { authConfig } from './auth.config';
 import { connectToDatabase } from './mongodb';
 import User from '../models/User';
 import Registration from '../models/Registration';
-import { initialUsers, initialRegistrations } from '../src/data/initialData';
+import Lecturer from '../models/Lecturer';
+import { initialUsers, initialRegistrations, initialLecturers } from '../src/data/initialData';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -112,7 +113,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             };
           }
         } catch (e) {
-          console.warn('DB lookup in User failed, trying Registration collection:', e);
+          console.warn('DB lookup in User failed, trying Lecturer/Registration collection:', e);
+        }
+
+        // 2b. Check MongoDB Lecturer collection (case-insensitive for username/email/name)
+        try {
+          await connectToDatabase();
+          const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const ciRegex = { $regex: new RegExp(`^${escaped}$`, 'i') };
+
+          const dbLecturer = await Lecturer.findOne({
+            $or: [
+              { username: ciRegex },
+              { email: ciRegex },
+              { id: identifier },
+              { name: ciRegex }
+            ]
+          }).lean();
+
+          if (dbLecturer) {
+            const lecUserId = (dbLecturer as any).userId || (dbLecturer as any).id;
+            const lecName = (dbLecturer as any).name || 'Faculty Member';
+            const lecEmail = (dbLecturer as any).email || (identifier.includes('@') ? identifier : `${identifier}@helpinghearts.lk`);
+            const lecUsername = (dbLecturer as any).username || identifier;
+            const lecPassword = (dbLecturer as any).password;
+
+            // Sync to User collection
+            try {
+              await User.findOneAndUpdate(
+                { $or: [{ id: lecUserId }, { email: ciRegex }, { username: ciRegex }] },
+                {
+                  id: lecUserId,
+                  name: lecName,
+                  email: lecEmail,
+                  role: 'LECTURER',
+                  phone: (dbLecturer as any).phone,
+                  avatar: (dbLecturer as any).photo,
+                  username: lecUsername,
+                  password: lecPassword,
+                  assignedPassword: lecPassword,
+                  status: 'ACTIVE'
+                },
+                { upsert: true, new: true }
+              );
+            } catch {}
+
+            return {
+              id: lecUserId,
+              name: lecName,
+              email: lecEmail,
+              role: 'LECTURER'
+            };
+          }
+        } catch (e) {
+          console.warn('Lecturer lookup in auth failed:', e);
         }
 
         // 3. Check MongoDB Registration collection (case-insensitive for username/email/name)
@@ -178,6 +232,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             name: foundReg.fullName,
             email: foundReg.email,
             role: 'STUDENT'
+          };
+        }
+
+        // 4b. Fallback: match against initialLecturers
+        const foundLecturer = initialLecturers.find(
+          l => (l as any).username?.toLowerCase() === identifier ||
+               l.email.toLowerCase() === identifier ||
+               l.id.toLowerCase() === identifier ||
+               l.name.toLowerCase() === identifier
+        );
+        if (foundLecturer) {
+          return {
+            id: foundLecturer.id,
+            name: foundLecturer.name,
+            email: foundLecturer.email,
+            role: 'LECTURER'
           };
         }
 

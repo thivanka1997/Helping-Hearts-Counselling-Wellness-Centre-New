@@ -14,8 +14,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       // Sync into User collection in MongoDB
       try {
         const lecUserId = updated.userId || `usr_${updated.id}`;
+        const lecUsername = updated.username?.trim() || (updated.email ? updated.email.split('@')[0] : undefined);
+        const userFindConditions: any[] = [{ id: lecUserId }];
+        if (updated.email) userFindConditions.push({ email: updated.email });
+        if (lecUsername) userFindConditions.push({ username: lecUsername });
+
         await User.findOneAndUpdate(
-          { $or: [{ id: lecUserId }, { email: updated.email }] },
+          { $or: userFindConditions },
           {
             id: lecUserId,
             name: updated.name,
@@ -23,8 +28,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             role: 'LECTURER',
             phone: updated.phone,
             avatar: updated.photo,
-            username: updated.username || (updated.email ? updated.email.split('@')[0] : undefined),
+            username: lecUsername,
             password: updated.password || undefined,
+            assignedPassword: updated.password || undefined,
             status: 'ACTIVE'
           },
           { upsert: true, new: true, setDefaultsOnInsert: true }
