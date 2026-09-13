@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession, signIn } from "next-auth/react";
-import { Lock, UserCheck, GraduationCap, ShieldAlert, Sparkles, KeyRound, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { Lock, UserCheck, GraduationCap, ShieldAlert, Sparkles, KeyRound, ArrowLeft, CheckCircle2, UserX } from "lucide-react";
 import { UserRole } from "@/src/types";
 
 /** Returns the portal URL for a given role. */
@@ -37,16 +37,6 @@ function LoginForm() {
       setSelectedRole("STUDENT");
     }
   }, [searchParams]);
-
-  // Auto-redirect if user is already authenticated
-  useEffect(() => {
-    if (status === "authenticated" && session?.user) {
-      const userRole = (session.user as any).role || "STUDENT";
-      const callbackUrl = searchParams.get("callbackUrl");
-      const target = callbackUrl || getTargetUrl(userRole);
-      window.location.assign(target);
-    }
-  }, [status, session, searchParams]);
 
   // Show error from NextAuth redirect (e.g. ?error=CredentialsSignin)
   useEffect(() => {
@@ -82,8 +72,27 @@ function LoginForm() {
 
       if (res?.error) {
         setIsLoading(false);
-        setErrorMsg("Invalid login credentials.");
+        setErrorMsg("Invalid login credentials. Please check your email/username and password.");
       } else {
+        // Query the student user to get the display name
+        let targetName = lowerUsername;
+        try {
+          const verifyRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: lowerUsername, role: roleToUse, password })
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.user?.name) {
+            targetName = verifyData.user.name;
+          }
+        } catch {}
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("hh_student_name", targetName);
+          window.dispatchEvent(new CustomEvent('student-name-updated', { detail: { name: targetName } }));
+        }
+
         const callbackUrl = searchParams.get("callbackUrl");
         const targetUrl = callbackUrl || getTargetUrl(roleToUse);
         window.location.assign(targetUrl);
@@ -147,17 +156,33 @@ function LoginForm() {
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Currently Signed In: {session.user.name || session.user.email} ({(session.user as any).role || 'STUDENT'})</span>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const callbackUrl = searchParams.get("callbackUrl");
-                  const target = callbackUrl || getTargetUrl((session.user as any).role || 'STUDENT');
-                  window.location.assign(target);
-                }}
-                className="w-full py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Continue to {(session.user as any).role || 'User'} Portal &rarr;</span>
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const callbackUrl = searchParams.get("callbackUrl");
+                    const target = callbackUrl || getTargetUrl((session.user as any).role || 'STUDENT');
+                    window.location.assign(target);
+                  }}
+                  className="flex-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Continue to Portal &rarr;</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (typeof window !== "undefined") {
+                      localStorage.removeItem("hh_student_name");
+                      localStorage.removeItem("hh_student_phone");
+                    }
+                    await signOut({ redirect: false });
+                  }}
+                  className="py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <UserX className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Switch User</span>
+                </button>
+              </div>
             </div>
           )}
 

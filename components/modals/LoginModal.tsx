@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { X, Lock, UserCheck, GraduationCap, ShieldAlert, Sparkles, KeyRound } from 'lucide-react';
 import { UserRole, User } from '@/src/types';
-import { api } from '@/lib/api-client';
+import { signIn } from 'next-auth/react';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -28,17 +28,61 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     e.preventDefault();
     setIsLoading(true);
 
+    const cleanIdentifier = email.trim();
+
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, role: selectedRole })
+      // 1. Authenticate with NextAuth
+      const res = await signIn('credentials', {
+        username: cleanIdentifier,
+        role: selectedRole,
+        password,
+        redirect: false
       });
-      const data = await res.json();
-      if (data.user) {
-        onLoginSuccess(data.user);
-        onSuccessToast?.(`Signed in as ${data.user.name}`);
-        onClose();
+
+      if (res?.error) {
+        alert('Invalid login credentials. Please verify your email/username and password.');
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Fetch matched student user details to get real display name
+      let studentName = cleanIdentifier;
+      try {
+        const verifyRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanIdentifier, role: selectedRole, password })
+        });
+        const verifyData = await verifyRes.json();
+        if (verifyData.user?.name) {
+          studentName = verifyData.user.name;
+        }
+      } catch {}
+
+      // 3. Sync to localStorage for instant client reactivity
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('hh_student_name', studentName);
+        window.dispatchEvent(new CustomEvent('student-name-updated', { detail: { name: studentName } }));
+      }
+
+      onSuccessToast?.(`Signed in as ${studentName}`);
+      onLoginSuccess({
+        id: `usr_${Date.now()}`,
+        name: studentName,
+        email: cleanIdentifier,
+        role: selectedRole,
+        status: 'ACTIVE'
+      } as any);
+
+      onClose();
+
+      // 4. Redirect to appropriate portal
+      if (selectedRole === 'STUDENT') {
+        window.location.assign('/student/dashboard');
+      } else if (selectedRole === 'LECTURER') {
+        window.location.assign('/lecturer/dashboard');
+      } else {
+        window.location.assign('/admin');
       }
     } catch (err) {
       alert('Login failed. Please check credentials.');

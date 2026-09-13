@@ -8,8 +8,10 @@ import { Footer } from '@/components/layout/Footer';
 import { useSession } from 'next-auth/react';
 import { GraduationCap, BookOpen, Clock, Award, User } from 'lucide-react';
 
+import { useStudentUser } from '@/lib/useStudentUser';
+
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
+  const { user: studentUser } = useStudentUser();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -23,7 +25,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800 font-sans">
-      <Navbar currentUser={session?.user as any} />
+      <Navbar currentUser={studentUser} />
 
       {/* Student LMS Sub-Header */}
       <div className="bg-teal-900 text-white border-b border-teal-800 py-2.5 px-4 sm:px-8">

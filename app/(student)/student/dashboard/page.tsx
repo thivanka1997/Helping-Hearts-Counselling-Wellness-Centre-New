@@ -8,14 +8,14 @@ import { api } from '@/lib/api-client';
 import { Course, AttendanceRecord, Announcement, User } from '@/src/types';
 import { initialCourses, initialAttendance, initialAnnouncements, initialUsers } from '@/src/data/initialData';
 
+import { useStudentUser } from '@/lib/useStudentUser';
+
 export default function StudentDashboardPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user: currentUser } = useStudentUser();
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(initialAttendance);
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
-
-  const currentUser: User = (session?.user as any) || initialUsers.find(u => u.role === 'STUDENT') || initialUsers[0];
 
   useEffect(() => {
     api.getCourses().then(setCourses).catch(() => {});

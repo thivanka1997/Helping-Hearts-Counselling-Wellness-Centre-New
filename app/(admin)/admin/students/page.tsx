@@ -72,7 +72,16 @@ export default function AdminStudentsRoute() {
       onAddStudent={handleAddStudent}
       onUpdateStatus={handleUpdateStatus}
       onUpdateCredentials={handleUpdateCredentials}
-      onDirectLoginAsStudent={() => router.push('/student/dashboard')}
+      onDirectLoginAsStudent={(reg?: any) => {
+        if (typeof window !== 'undefined' && reg?.fullName) {
+          localStorage.setItem('hh_student_name', reg.fullName);
+          if (reg.phone) localStorage.setItem('hh_student_phone', reg.phone);
+          window.dispatchEvent(
+            new CustomEvent('student-name-updated', { detail: { name: reg.fullName, phone: reg.phone } })
+          );
+        }
+        router.push('/student/dashboard');
+      }}
       onSuccessToast={(msg) => alert(msg)}
     />
   );

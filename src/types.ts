@@ -7,6 +7,8 @@ export interface User {
   role: UserRole;
   phone?: string;
   avatar?: string;
+  username?: string;
+  password?: string;
   status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
   createdAt: string;
 }

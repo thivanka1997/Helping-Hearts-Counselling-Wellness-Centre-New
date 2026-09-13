@@ -1,7 +1,8 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
-import { initialUsers } from "@/src/data/initialData";
+import Registration from "@/models/Registration";
+import { initialUsers, initialRegistrations } from "@/src/data/initialData";
 
 /**
  * POST /api/auth/login
@@ -38,11 +39,18 @@ export async function POST(req: NextRequest) {
 
   let user: { id: string; name: string; email: string; role: string } | null = null;
 
-  // 1. Try the database first — match by username or email
+  // 1. Try MongoDB User collection (case-insensitive for username/email/name)
   try {
     await connectToDatabase();
+    const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const ciRegex = { $regex: new RegExp(`^${escaped}$`, "i") };
     const dbUser = await User.findOne({
-      $or: [{ username: identifier }, { email: identifier }],
+      $or: [
+        { username: ciRegex },
+        { email: ciRegex },
+        { id: identifier },
+        { name: ciRegex }
+      ],
     }).lean();
 
     if (dbUser) {
@@ -54,39 +62,98 @@ export async function POST(req: NextRequest) {
       };
     }
   } catch (e) {
-    console.warn("[/api/auth/login] DB lookup failed, trying fallback:", e);
+    console.warn("[/api/auth/login] DB User lookup failed, trying fallback:", e);
   }
 
-  // 2. Fallback: search initialUsers by email or username field
+  // 2. Try MongoDB Registration collection (case-insensitive for username/email/name)
+  if (!user) {
+    try {
+      await connectToDatabase();
+      const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const ciRegex = { $regex: new RegExp(`^${escaped}$`, "i") };
+      const dbReg = await Registration.findOne({
+        $or: [
+          { assignedUsername: ciRegex },
+          { email: ciRegex },
+          { studentId: identifier },
+          { id: identifier },
+          { fullName: ciRegex }
+        ]
+      }).lean();
+
+      if (dbReg) {
+        user = {
+          id: (dbReg as any).studentId || `usr_${(dbReg as any).id}`,
+          name: (dbReg as any).fullName,
+          email: (dbReg as any).email,
+          role: "STUDENT",
+        };
+      }
+    } catch (e) {
+      console.warn("[/api/auth/login] DB Registration lookup failed:", e);
+    }
+  }
+
+  // 3. Fallback: search initialRegistrations
+  if (!user) {
+    const foundReg = initialRegistrations.find(
+      (r) =>
+        r.assignedUsername?.toLowerCase() === identifier ||
+        r.email.toLowerCase() === identifier ||
+        r.fullName.toLowerCase() === identifier ||
+        r.id.toLowerCase() === identifier
+    );
+    if (foundReg) {
+      user = {
+        id: foundReg.studentId || `usr_${foundReg.id}`,
+        name: foundReg.fullName,
+        email: foundReg.email,
+        role: "STUDENT",
+      };
+    }
+  }
+
+  // 4. Fallback: search initialUsers by email, username, id, or name
   if (!user) {
     const found = initialUsers.find(
       (u) =>
         u.email.toLowerCase() === identifier ||
-        (u as any).username?.toLowerCase() === identifier
+        u.id.toLowerCase() === identifier ||
+        (u as any).username?.toLowerCase() === identifier ||
+        u.name.toLowerCase() === identifier
     );
     if (found) {
       user = { id: found.id, name: found.name, email: found.email, role: found.role };
     }
   }
 
-  // 3. Role-based fallback — find any user with the requested role
-  if (!user) {
-    const byRole = initialUsers.find((u) => u.role === role);
-    if (byRole) {
-      user = { id: byRole.id, name: byRole.name, email: byRole.email, role: byRole.role };
+  // 5. If quick student demo login ("student")
+  if (!user && (identifier === "student" || identifier === "student_user")) {
+    const defaultStudent = initialUsers.find((u) => u.role === "STUDENT");
+    if (defaultStudent) {
+      user = { id: defaultStudent.id, name: defaultStudent.name, email: defaultStudent.email, role: "STUDENT" };
     }
   }
 
-  // 4. Demo mock — always succeeds so quick-login buttons never fail
+  // 6. User entered a custom username: derive clean display name
   if (!user) {
-    const mockName =
+    const cleanName = identifier
+      .replace(/[@._-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+
+    const mockName = cleanName || (
       role === "ADMIN"
         ? "Chief Administrator"
         : role === "LECTURER"
         ? "Ms. Ramsina Farvin Jelaldeen"
         : role === "COUNSELLING_ADMIN"
         ? "Counselling Desk Manager"
-        : "Saman Kumara";
+        : "Student Learner"
+    );
 
     user = {
       id: "usr_" + Date.now(),

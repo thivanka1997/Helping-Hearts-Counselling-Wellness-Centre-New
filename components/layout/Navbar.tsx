@@ -138,6 +138,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('hh_student_name');
+      localStorage.removeItem('hh_student_phone');
+      localStorage.removeItem('hh_student_user');
+      window.dispatchEvent(new CustomEvent('student-name-updated', { detail: { name: '' } }));
+    }
     if (onLogout) {
       onLogout();
     } else {

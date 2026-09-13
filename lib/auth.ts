@@ -3,7 +3,8 @@ import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
 import { connectToDatabase } from './mongodb';
 import User from '../models/User';
-import { initialUsers } from '../src/data/initialData';
+import Registration from '../models/Registration';
+import { initialUsers, initialRegistrations } from '../src/data/initialData';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -57,7 +58,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         }
 
+        // Quick demo student alias: check DB first in case student name was updated
         if (identifier === 'student' || identifier === 'student_user' || identifier === 'student@helpinghearts.lk') {
+          try {
+            await connectToDatabase();
+            const dbStudent = await User.findOne({
+              $or: [{ id: 'usr-student-1' }, { role: 'STUDENT' }, { email: 'student@helpinghearts.lk' }]
+            }).lean();
+            if (dbStudent && (dbStudent as any).name) {
+              return {
+                id: (dbStudent as any).id || (dbStudent as any)._id?.toString() || 'usr-student-1',
+                name: (dbStudent as any).name,
+                email: (dbStudent as any).email || 'student@helpinghearts.lk',
+                role: 'STUDENT'
+              };
+            }
+          } catch {}
+
           const stdUser = initialUsers.find(u => u.role === 'STUDENT');
           if (stdUser) {
             return {
@@ -69,14 +86,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         }
 
-        // 2. Check Database by username, email, or id
+        // 2. Check MongoDB User collection (case-insensitive for username/email/name)
         try {
           await connectToDatabase();
+          const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const ciRegex = { $regex: new RegExp(`^${escaped}$`, 'i') };
+
           const dbUser = await User.findOne({
             $or: [
-              { username: identifier },
-              { email: identifier },
-              { id: identifier }
+              { username: ciRegex },
+              { email: ciRegex },
+              { id: identifier },
+              { name: ciRegex }
             ]
           }).lean();
 
@@ -91,14 +112,81 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             };
           }
         } catch (e) {
-          console.warn('DB lookup failed in auth, checking initialData fallback', e);
+          console.warn('DB lookup in User failed, trying Registration collection:', e);
         }
 
-        // 3. Fallback: match against initialUsers by email, username, or id
+        // 3. Check MongoDB Registration collection (case-insensitive for username/email/name)
+        try {
+          await connectToDatabase();
+          const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const ciRegex = { $regex: new RegExp(`^${escaped}$`, 'i') };
+
+          const dbReg = await Registration.findOne({
+            $or: [
+              { assignedUsername: ciRegex },
+              { email: ciRegex },
+              { studentId: identifier },
+              { id: identifier },
+              { fullName: ciRegex }
+            ]
+          }).lean();
+
+          if (dbReg) {
+            const studentId = (dbReg as any).studentId || `usr_${(dbReg as any).id}`;
+            const studentName = (dbReg as any).fullName || 'Student Learner';
+            const studentEmail = (dbReg as any).email || (identifier.includes('@') ? identifier : `${identifier}@helpinghearts.lk`);
+
+            // Sync to User collection
+            try {
+              await User.findOneAndUpdate(
+                { $or: [{ id: studentId }, { email: ciRegex }, { username: ciRegex }] },
+                {
+                  id: studentId,
+                  name: studentName,
+                  email: studentEmail,
+                  role: 'STUDENT',
+                  phone: (dbReg as any).phone,
+                  username: (dbReg as any).assignedUsername || identifier,
+                  status: 'ACTIVE'
+                },
+                { upsert: true, new: true }
+              );
+            } catch {}
+
+            return {
+              id: studentId,
+              name: studentName,
+              email: studentEmail,
+              role: 'STUDENT'
+            };
+          }
+        } catch (e) {
+          console.warn('Registration lookup in auth failed:', e);
+        }
+
+        // 4. Fallback: Check initialRegistrations (case-insensitive)
+        const foundReg = initialRegistrations.find(
+          r => r.assignedUsername?.toLowerCase() === identifier ||
+               r.email.toLowerCase() === identifier ||
+               r.fullName.toLowerCase() === identifier ||
+               r.studentId?.toLowerCase() === identifier ||
+               r.id.toLowerCase() === identifier
+        );
+        if (foundReg) {
+          return {
+            id: foundReg.studentId || `usr_${foundReg.id}`,
+            name: foundReg.fullName,
+            email: foundReg.email,
+            role: 'STUDENT'
+          };
+        }
+
+        // 5. Fallback: match against initialUsers by email, username, or id
         const foundUser = initialUsers.find(
           u => u.email.toLowerCase() === identifier ||
                u.id.toLowerCase() === identifier ||
-               (u as any).username?.toLowerCase() === identifier
+               (u as any).username?.toLowerCase() === identifier ||
+               u.name.toLowerCase() === identifier
         );
         if (foundUser) {
           return {
@@ -109,26 +197,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         }
 
-        // 4. Fallback: Role-based fallback
-        const foundByRole = initialUsers.find(u => String(u.role).toUpperCase() === inputRole);
-        if (foundByRole) {
-          return {
-            id: foundByRole.id,
-            name: foundByRole.name,
-            email: foundByRole.email,
-            role: String(foundByRole.role).toUpperCase()
-          };
-        }
+        // 6. User entered a custom student username / email: derive clean display name
+        const namePart = identifier.includes('@') ? identifier.split('@')[0] : identifier;
+        const cleanName = namePart
+          .replace(/[@._-]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .split(' ')
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(' ');
+        const studentName = cleanName || (inputRole === 'ADMIN' ? 'Chief Administrator' :
+                             inputRole === 'LECTURER' ? 'Miss Ramsina Farvin Jelaldeen' :
+                             inputRole === 'COUNSELLING_ADMIN' ? 'Counselling Desk Manager' : 'Student Learner');
+        const studentUserId = `usr_${Date.now()}`;
+        const studentEmail = identifier.includes('@') ? identifier : `${identifier}@helpinghearts.lk`;
 
-        // 5. Default fallback
-        const mockName = inputRole === 'ADMIN' ? 'Chief Administrator' :
-                         inputRole === 'LECTURER' ? 'Miss Ramsina Farvin Jelaldeen' :
-                         inputRole === 'COUNSELLING_ADMIN' ? 'Counselling Desk Manager' : 'Saman Kumara';
+        // Upsert to User collection so changes made later will persist
+        try {
+          await connectToDatabase();
+          await User.findOneAndUpdate(
+            { $or: [{ username: identifier }, { email: studentEmail }] },
+            {
+              id: studentUserId,
+              name: studentName,
+              email: studentEmail,
+              role: inputRole,
+              username: identifier,
+              status: 'ACTIVE'
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+          );
+        } catch {}
 
         return {
-          id: 'usr_' + Date.now(),
-          name: mockName,
-          email: identifier.includes('@') ? identifier : `${identifier}@helpinghearts.lk`,
+          id: studentUserId,
+          name: studentName,
+          email: studentEmail,
           role: inputRole
         };
       }

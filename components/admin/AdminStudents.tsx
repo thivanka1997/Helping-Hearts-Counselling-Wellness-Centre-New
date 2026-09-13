@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import { StudentRegistration, Course } from '@/src/types';
-import { CreditCard, Eye, CheckCircle2, XCircle, Search, Filter, ShieldCheck, FileText, Key, Copy, Sparkles, RefreshCw, LogIn, UserCheck, Lock, ExternalLink, Check, UserPlus, Plus } from 'lucide-react';
+import { CreditCard, Eye, CheckCircle2, XCircle, Search, Filter, ShieldCheck, FileText, Key, Copy, Sparkles, RefreshCw, LogIn, UserCheck, Lock, ExternalLink, Check, UserPlus, Plus, Edit3 } from 'lucide-react';
+import { api } from '@/lib/api-client';
 
 interface AdminStudentsProps {
   registrations: StudentRegistration[];
@@ -31,7 +32,8 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [inspectingReg, setInspectingReg] = useState<StudentRegistration | null>(null);
 
-  // Credential Edit State inside Inspection Modal
+  // Credential & Profile Edit State inside Inspection Modal
+  const [editingFullName, setEditingFullName] = useState<string>('');
   const [editingUsername, setEditingUsername] = useState<string>('');
   const [editingPassword, setEditingPassword] = useState<string>('');
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
@@ -146,6 +148,7 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
 
   const handleOpenInspect = (reg: StudentRegistration) => {
     setInspectingReg(reg);
+    setEditingFullName(reg.fullName);
     const defaultUsername = reg.assignedUsername || reg.email.split('@')[0] + '_hh2026';
     const defaultPassword = reg.assignedPassword || 'HHStudent2026#';
     setEditingUsername(defaultUsername);
@@ -154,7 +157,8 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
 
   const generateAutoUsername = () => {
     if (!inspectingReg) return;
-    const cleanName = inspectingReg.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nameToUse = editingFullName || inspectingReg.fullName;
+    const cleanName = nameToUse.toLowerCase().replace(/[^a-z0-9]/g, '');
     const randomSuffix = Math.floor(100 + Math.random() * 900);
     setEditingUsername(`${cleanName}_${randomSuffix}`);
   };
@@ -174,10 +178,28 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
       alert('Please provide both username and password.');
       return;
     }
+    const finalName = editingFullName.trim() || inspectingReg.fullName;
     onUpdateCredentials?.(inspectingReg.id, editingUsername.trim(), editingPassword.trim());
-    onSuccessToast?.(`Portal credentials updated for ${inspectingReg.fullName}!`);
+
+    // Also persist student name update to MongoDB and Registration collection
+    api.updateRegistration(inspectingReg.id, {
+      fullName: finalName,
+      assignedUsername: editingUsername.trim(),
+      assignedPassword: editingPassword.trim()
+    }).catch(() => {});
+
+    // Sync to user collection as well
+    const studentUserId = inspectingReg.studentId || `usr_${inspectingReg.id}`;
+    api.updateUser(studentUserId, {
+      name: finalName,
+      username: editingUsername.trim(),
+      password: editingPassword.trim()
+    }).catch(() => {});
+
+    onSuccessToast?.(`Student name & portal credentials updated for ${finalName}!`);
     setInspectingReg({
       ...inspectingReg,
+      fullName: finalName,
       assignedUsername: editingUsername.trim(),
       assignedPassword: editingPassword.trim()
     });
@@ -355,7 +377,18 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
                       <div className="flex flex-wrap items-center justify-end gap-1.5">
                         {/* Direct Portal Login Button */}
                         <button
-                          onClick={() => onDirectLoginAsStudent?.(reg)}
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              localStorage.setItem('hh_student_name', reg.fullName);
+                              if (reg.phone) localStorage.setItem('hh_student_phone', reg.phone);
+                              window.dispatchEvent(
+                                new CustomEvent('student-name-updated', {
+                                  detail: { name: reg.fullName, phone: reg.phone }
+                                })
+                              );
+                            }
+                            onDirectLoginAsStudent?.(reg);
+                          }}
                           className="px-2.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] inline-flex items-center gap-1 shadow-xs transition-all cursor-pointer"
                           title="Portal Login as this Student to test LMS"
                         >
@@ -618,21 +651,27 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
             </div>
 
             {/* Student Quick Summary */}
-            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
               <div>
-                <p className="text-slate-500">Student Name:</p>
-                <p className="font-bold text-slate-900">{inspectingReg.fullName}</p>
+                <label className="text-slate-600 font-bold block mb-1">Student Full Name:</label>
+                <input
+                  type="text"
+                  value={editingFullName}
+                  onChange={(e) => setEditingFullName(e.target.value)}
+                  placeholder="Student Full Name"
+                  className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold text-slate-900 bg-white focus:ring-1 focus:ring-teal-600 outline-none"
+                />
               </div>
               <div>
-                <p className="text-slate-500">Enrolled Course:</p>
-                <p className="font-bold text-teal-900">{inspectingReg.courseTitle}</p>
+                <p className="text-slate-500 font-bold mb-1">Enrolled Course:</p>
+                <p className="font-bold text-teal-900 pt-1">{inspectingReg.courseTitle}</p>
               </div>
               <div>
-                <p className="text-slate-500">Email & Phone:</p>
+                <p className="text-slate-500 font-bold">Email & Phone:</p>
                 <p className="font-medium text-slate-800">{inspectingReg.email} • {inspectingReg.phone}</p>
               </div>
               <div>
-                <p className="text-slate-500">Amount & Ref:</p>
+                <p className="text-slate-500 font-bold">Amount & Ref:</p>
                 <p className="font-bold text-slate-900">LKR {(inspectingReg.amountPaid ?? 0).toLocaleString()} ({inspectingReg.paymentRef})</p>
               </div>
             </div>
@@ -709,14 +748,24 @@ export const AdminStudents: React.FC<AdminStudentsProps> = ({
                   className="px-3.5 py-2 rounded-xl bg-teal-800 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer border border-teal-700"
                 >
                   <Key className="w-3.5 h-3.5 text-amber-300" />
-                  <span>Save Created Credentials</span>
+                  <span>Save Created Credentials & Name</span>
                 </button>
 
                 {onDirectLoginAsStudent && (
                   <button
                     type="button"
                     onClick={() => {
-                      onDirectLoginAsStudent(inspectingReg);
+                      const finalName = editingFullName.trim() || inspectingReg.fullName;
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('hh_student_name', finalName);
+                        if (inspectingReg.phone) localStorage.setItem('hh_student_phone', inspectingReg.phone);
+                        window.dispatchEvent(
+                          new CustomEvent('student-name-updated', {
+                            detail: { name: finalName, phone: inspectingReg.phone }
+                          })
+                        );
+                      }
+                      onDirectLoginAsStudent({ ...inspectingReg, fullName: finalName });
                       setInspectingReg(null);
                     }}
                     className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
