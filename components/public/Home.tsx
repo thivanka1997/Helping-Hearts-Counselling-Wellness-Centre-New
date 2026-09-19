@@ -168,31 +168,6 @@ export const Home: React.FC<HomeProps> = ({
                   className="w-full h-[380px] object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 
-                {/* Official Co-Branding Badges */}
-                <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-slate-950/85 backdrop-blur-md p-1.5 pr-3 rounded-2xl border border-teal-700/60 shadow-xl">
-                  <div className="flex items-center -space-x-2">
-                    <div className="w-10 h-10 rounded-full bg-white p-0.5 border-2 border-amber-400 shadow-md flex items-center justify-center overflow-hidden z-10" title="Helping Hearts Centre">
-                      <img
-                        src={settings?.logoUrl || "/assets/images/helping_hearts_logo_1786214208419.jpg"}
-                        alt="Official Helping Hearts Emblem"
-                        className="w-full h-full object-contain rounded-full"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-white p-0.5 border-2 border-teal-400 shadow-md flex items-center justify-center overflow-hidden" title="CIMS Campus">
-                      <img
-                        src="https://res.cloudinary.com/f5l8xk5o/image/upload/v1787801762/Media_43.jpg"
-                        alt="CIMS Campus Logo"
-                        className="w-full h-full object-contain rounded-full"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                  </div>
-                  <div className="text-left pl-1">
-                    <p className="text-[9px] font-bold text-amber-300 uppercase leading-none">Partnership</p>
-                    <p className="text-[11px] font-bold text-white leading-tight">Helping Hearts × CIMS</p>
-                  </div>
-                </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent p-6 flex flex-col justify-end">
                   <div className="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700/80 text-xs space-y-2">
