@@ -968,7 +968,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
                   <div className="flex items-center gap-2.5 pt-2 border-t border-slate-200/80">
                     <div className="w-8 h-8 rounded-full bg-teal-200 text-teal-900 font-bold flex items-center justify-center text-xs overflow-hidden shrink-0">
-                      {t.photo ? <img src={t.photo} alt={t.name} className="w-full h-full object-cover" /> : t.name.charAt(0)}
+                      {t.photo && !t.photo.includes('unsplash') ? <img src={t.photo} alt={t.name} className="w-full h-full object-cover" /> : (t.name ? t.name.charAt(0).toUpperCase() : 'U')}
                     </div>
                     <div>
                       <p className="font-bold text-slate-900">{t.name}</p>

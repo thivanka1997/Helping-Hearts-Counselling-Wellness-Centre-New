@@ -22,8 +22,18 @@ export async function GET() {
       );
     }
 
+    // Clean up any legacy unsplash portrait photos from db
+    await Testimonial.updateMany(
+      { photo: { $regex: 'unsplash', $options: 'i' } },
+      { $set: { photo: '' } }
+    ).catch(() => {});
+
     const testimonials = await Testimonial.find().sort({ createdAt: -1 }).lean();
-    return NextResponse.json(testimonials);
+    const sanitized = testimonials.map((t: any) => ({
+      ...t,
+      photo: t.photo && t.photo.includes('unsplash') ? '' : t.photo
+    }));
+    return NextResponse.json(sanitized);
   } catch (err: any) {
     console.error('Error fetching testimonials:', err);
     return NextResponse.json(initialTestimonials);

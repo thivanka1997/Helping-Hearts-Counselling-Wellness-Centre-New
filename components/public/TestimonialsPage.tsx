@@ -89,12 +89,9 @@ export const TestimonialsPage: React.FC<TestimonialsPageProps> = ({ testimonials
           <div className="bg-gradient-to-r from-teal-900 to-teal-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
             <Quote className="absolute top-4 right-6 w-16 h-16 text-teal-600/40" />
             <div className="flex flex-col sm:flex-row items-start gap-6 relative z-10">
-              <img
-                src={featured.photo || avatarFallback(featured.name)}
-                alt={featured.name}
-                className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400 shrink-0 shadow-lg"
-                onError={(e) => { (e.target as HTMLImageElement).src = avatarFallback(featured.name); }}
-              />
+              <div className="w-20 h-20 rounded-2xl bg-amber-400/20 text-amber-300 border-2 border-amber-400 font-extrabold text-3xl flex items-center justify-center shrink-0 shadow-lg uppercase">
+                {featured.name ? featured.name.trim().charAt(0).toUpperCase() : 'U'}
+              </div>
               <div className="space-y-3 flex-1">
                 <StarRating rating={featured.rating} />
                 <blockquote className="text-base sm:text-lg font-medium text-teal-100 leading-relaxed italic">
@@ -145,12 +142,9 @@ export const TestimonialsPage: React.FC<TestimonialsPageProps> = ({ testimonials
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <img
-                      src={t.photo || avatarFallback(t.name)}
-                      alt={t.name}
-                      className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-100 shrink-0"
-                      onError={(e) => { (e.target as HTMLImageElement).src = avatarFallback(t.name); }}
-                    />
+                    <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-800 font-bold text-2xl flex items-center justify-center border-2 border-teal-200 shrink-0 shadow-xs uppercase">
+                      {t.name ? t.name.trim().charAt(0).toUpperCase() : 'U'}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <p className="font-extrabold text-slate-900 text-sm truncate">{t.name}</p>

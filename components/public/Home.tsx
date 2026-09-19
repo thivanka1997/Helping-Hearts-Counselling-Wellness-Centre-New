@@ -522,12 +522,8 @@ export const Home: React.FC<HomeProps> = ({
                 </div>
 
                 <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-                  <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-black flex items-center justify-center text-sm overflow-hidden shrink-0 border border-teal-200">
-                    {test.photo ? (
-                      <img src={test.photo} alt={test.name} className="w-full h-full object-cover" />
-                    ) : (
-                      test.name.charAt(0)
-                    )}
+                  <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-sm uppercase shrink-0 border border-teal-200 shadow-xs">
+                    {test.name ? test.name.trim().charAt(0).toUpperCase() : 'U'}
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">{test.name}</h4>
