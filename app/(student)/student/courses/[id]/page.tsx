@@ -7,7 +7,10 @@ import { api } from '@/lib/api-client';
 import { Course, CourseModule } from '@/src/types';
 import { initialCourses, initialCourseModules } from '@/src/data/initialData';
 
+import { useStudentUser } from '@/lib/useStudentUser';
+
 export default function StudentCourseViewerPage() {
+  const { user: studentUser } = useStudentUser();
   const params = useParams();
   const router = useRouter();
   const courseId = params?.id as string;
@@ -36,6 +39,7 @@ export default function StudentCourseViewerPage() {
 
   return (
     <StudentCourseViewer
+      user={studentUser}
       course={course}
       modules={activeModules}
       onBack={() => router.push('/student/dashboard')}

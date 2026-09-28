@@ -64,12 +64,19 @@ export interface ClientAppointment {
   updatedAt: string;
 }
 
+export type LessonContentType = 'VIDEO' | 'MEETING' | 'ASSIGNMENT' | 'PDF' | 'DOC' | 'PPT' | 'LINK';
+
+export type LessonMedium = 'Sinhala' | 'Tamil' | 'English';
+
 export interface LessonResource {
   id: string;
   title: string;
-  type: 'PDF' | 'DOC' | 'PPT' | 'LINK' | 'VIDEO';
+  type: LessonContentType;
   url: string;
   description?: string;
+  dueDate?: string;
+  medium?: LessonMedium;
+  date?: string;
 }
 
 export interface Lesson {
@@ -77,10 +84,19 @@ export interface Lesson {
   moduleId: string;
   title: string;
   description: string;
-  videoUrl?: string; // YouTube Video URL or ID
+  videoUrl?: string; // YouTube Video URL, Google Drive Preview, MP4, or Zoom Link
   resources: LessonResource[];
   order: number;
   durationMinutes: number;
+  type?: LessonContentType;
+  medium?: LessonMedium;
+  date?: string;
+  meetingId?: string;
+  meetingPasscode?: string;
+  meetingTime?: string;
+  dueDate?: string;
+  assignmentInstructions?: string;
+  maxScore?: number;
 }
 
 export interface CourseModule {

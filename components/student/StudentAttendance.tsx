@@ -9,7 +9,12 @@ interface StudentAttendanceProps {
 }
 
 export const StudentAttendance: React.FC<StudentAttendanceProps> = ({ user, attendance }) => {
-  const studentAtt = attendance.filter((a) => a.studentName === user.name || a.studentId === 'std-1');
+  const studentAtt = attendance.filter((a) =>
+    a.studentId === user.id ||
+    a.studentName?.trim().toLowerCase() === user.name?.trim().toLowerCase() ||
+    a.studentId === 'std-1' ||
+    (user.name && a.studentName?.toLowerCase().includes(user.name.toLowerCase().split(' ')[0]))
+  );
   const presentCount = studentAtt.filter((a) => a.status === 'Present').length;
   const percentage = studentAtt.length > 0 ? Math.round((presentCount / studentAtt.length) * 100) : 100;
 

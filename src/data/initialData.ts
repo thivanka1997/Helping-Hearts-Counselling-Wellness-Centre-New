@@ -528,16 +528,19 @@ export const initialCourseModules: CourseModule[] = [
   {
     id: 'mod-101',
     courseId: 'crs-1',
-    title: 'Module 01: Foundations of Counselling Psychology',
-    description: 'Introduction to psychological paradigms, active listening, and therapeutic rapport.',
+    title: 'Module 01: Course Materials & Lecture Recordings',
+    description: 'Foundations of counselling psychology, live Zoom interactive classes, assessments, and reference reading.',
     order: 1,
     lessons: [
       {
         id: 'les-101',
         moduleId: 'mod-101',
-        title: 'Lesson 01: Introduction to Counselling Principles & Ethics',
+        title: 'September 12th Lecture Recording: Introduction to Counselling Ethics',
         description: 'Core overview of counselling versus advising, therapist boundaries, and ethical guidelines.',
-        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Clean YouTube embed link
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        type: 'VIDEO',
+        medium: 'Sinhala',
+        date: '2026-09-12',
         durationMinutes: 45,
         order: 1,
         resources: [
@@ -545,6 +548,8 @@ export const initialCourseModules: CourseModule[] = [
             id: 'res-1',
             title: 'Counselling Ethics Handbook (PDF)',
             type: 'PDF',
+            medium: 'Sinhala',
+            date: '2026-09-12',
             url: 'https://drive.google.com/file/d/123456789/view',
             description: 'Essential ethical guidelines for practicing counsellors in Sri Lanka.'
           },
@@ -552,6 +557,8 @@ export const initialCourseModules: CourseModule[] = [
             id: 'res-2',
             title: 'Therapeutic Rapport Worksheet (DOC)',
             type: 'DOC',
+            medium: 'Sinhala',
+            date: '2026-09-12',
             url: 'https://drive.google.com/file/d/987654321/view',
             description: 'Self-reflection guide for intake communication.'
           }
@@ -560,9 +567,12 @@ export const initialCourseModules: CourseModule[] = [
       {
         id: 'les-102',
         moduleId: 'mod-101',
-        title: 'Lesson 02: Micro-Skills: Active Listening & Paraphrasing',
+        title: 'September 13th Lecture Recording: Active Listening & Paraphrasing Skills',
         description: 'Practical exercise on verbal and non-verbal attending behavior.',
         videoUrl: 'https://www.youtube.com/watch?v=L_LUpnjgPso',
+        type: 'VIDEO',
+        medium: 'Sinhala',
+        date: '2026-09-13',
         durationMinutes: 50,
         order: 2,
         resources: [
@@ -570,8 +580,85 @@ export const initialCourseModules: CourseModule[] = [
             id: 'res-3',
             title: 'Micro-Skills Observation Sheet',
             type: 'PDF',
+            medium: 'Sinhala',
+            date: '2026-09-13',
             url: 'https://drive.google.com/file/d/abcdef123/view',
             description: 'Checklist for practical roleplay sessions.'
+          }
+        ]
+      },
+      {
+        id: 'les-103',
+        moduleId: 'mod-101',
+        title: 'Topic: CST Sep 18,2026 08:00 PM',
+        description: 'Topic: CST Sep 18,2026 08:00 PM - Live interactive clinical skills training classroom session with faculty panel. Meeting ID: 863 8022 9223 Passcode: 487619 Tamil Medium.',
+        videoUrl: 'https://zoom.us/j/86380229223?pwd=TamilMediumPasscode487619',
+        type: 'MEETING',
+        medium: 'Tamil',
+        date: '2026-09-18',
+        meetingId: '863 8022 9223',
+        meetingPasscode: '487619',
+        meetingTime: 'Sep 18, 2026 at 08:00 PM',
+        durationMinutes: 90,
+        order: 3,
+        resources: [
+          {
+            id: 'res-zoom-notes',
+            title: 'Live Session Case Study Notes (PDF)',
+            type: 'PDF',
+            medium: 'Tamil',
+            date: '2026-09-18',
+            url: 'https://drive.google.com/file/d/zoom-case-notes/view',
+            description: 'Handout discussed during the Zoom session.'
+          }
+        ]
+      },
+      {
+        id: 'les-104',
+        moduleId: 'mod-101',
+        title: 'Online Assignment 01: Client Intake & Ethical Dilemma Assessment',
+        description: 'Formulate an ethical response to the provided scenario. Outline boundary considerations, confidentiality limits, and referral protocols.',
+        videoUrl: '',
+        type: 'ASSIGNMENT',
+        medium: 'Sinhala',
+        date: '2026-09-20',
+        dueDate: '2026-10-15',
+        assignmentInstructions: 'Please download the case study prompt below. Draft a 500-800 word reflective submission discussing how you would maintain unconditional positive regard while setting strict therapeutic boundaries. Submit as a Google Drive link or paste your written answers in the LMS submission box below.',
+        maxScore: 100,
+        durationMinutes: 120,
+        order: 4,
+        resources: [
+          {
+            id: 'res-assign-doc',
+            title: 'Assignment 01 Brief & Rubric (PDF)',
+            type: 'PDF',
+            medium: 'Sinhala',
+            date: '2026-09-20',
+            url: 'https://drive.google.com/file/d/assignment-01-brief/view',
+            description: 'Scoring criteria and case study question sheet.'
+          }
+        ]
+      },
+      {
+        id: 'les-105',
+        moduleId: 'mod-101',
+        title: 'Course Study Handbook: Professional Counselling Skills & Code of Practice (PDF)',
+        description: 'Comprehensive curriculum handbook and reading material covering all essential clinical protocols.',
+        videoUrl: 'https://drive.google.com/file/d/counselling-handbook-full/preview',
+        type: 'PDF',
+        medium: 'English',
+        date: '2026-09-25',
+        durationMinutes: 60,
+        order: 5,
+        resources: [
+          {
+            id: 'res-full-handbook',
+            title: 'Download Full Counselling Skills Handbook (PDF)',
+            type: 'PDF',
+            medium: 'English',
+            date: '2026-09-25',
+            url: 'https://drive.google.com/file/d/counselling-handbook-full/view',
+            description: 'Official Helping Hearts student study pack (24 pages).'
           }
         ]
       }
@@ -585,11 +672,12 @@ export const initialCourseModules: CourseModule[] = [
     order: 2,
     lessons: [
       {
-        id: 'les-103',
+        id: 'les-106',
         moduleId: 'mod-102',
-        title: 'Lesson 03: Person-Centered Therapy (Carl Rogers Model)',
+        title: 'Lesson 04: Person-Centered Therapy (Carl Rogers Model)',
         description: 'Unconditional positive regard, congruence, and accurate empathy.',
         videoUrl: 'https://www.youtube.com/watch?v=fEqJ86K856k',
+        type: 'VIDEO',
         durationMinutes: 60,
         order: 1,
         resources: [

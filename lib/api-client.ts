@@ -122,12 +122,55 @@ export const api = {
     fetchJson<{ success: boolean }>(`/api/courses/${id}`, { method: 'DELETE' }),
   getCourseModules: (courseId: string) =>
     fetchJson<CourseModule[]>(`/api/courses/${courseId}/modules`, undefined, initialCourseModules.filter(m => m.courseId === courseId)),
-  addCourseResource: (courseId: string, data: { title: string; type: string; url: string; description?: string; moduleId?: string }) =>
+  addCourseResource: (courseId: string, data: {
+    title: string;
+    type: string;
+    url: string;
+    description?: string;
+    medium?: 'Sinhala' | 'Tamil' | 'English';
+    date?: string;
+    moduleId?: string;
+    meetingId?: string;
+    meetingPasscode?: string;
+    meetingTime?: string;
+    dueDate?: string;
+    assignmentInstructions?: string;
+    maxScore?: number;
+  }) =>
     fetchJson<{ success: boolean; module?: CourseModule; resource?: LessonResource }>(`/api/courses/${courseId}/modules`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }),
+  updateCourseResource: (courseId: string, data: {
+    lessonId?: string;
+    resourceId?: string;
+    title?: string;
+    type?: string;
+    url?: string;
+    description?: string;
+    medium?: 'Sinhala' | 'Tamil' | 'English';
+    date?: string;
+    meetingId?: string;
+    meetingPasscode?: string;
+    meetingTime?: string;
+    dueDate?: string;
+    assignmentInstructions?: string;
+    maxScore?: number;
+  }) =>
+    fetchJson<{ success: boolean; module?: CourseModule }>(`/api/courses/${courseId}/modules`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }),
+  deleteCourseResource: (courseId: string, params: { lessonId?: string; resourceId?: string }) => {
+    const query = new URLSearchParams();
+    if (params.lessonId) query.set('lessonId', params.lessonId);
+    if (params.resourceId) query.set('resourceId', params.resourceId);
+    return fetchJson<{ success: boolean; module?: CourseModule }>(`/api/courses/${courseId}/modules?${query.toString()}`, {
+      method: 'DELETE'
+    });
+  },
 
   // Student Registrations
   getRegistrations: () => fetchJson<StudentRegistration[]>('/api/registrations', undefined, initialRegistrations),
