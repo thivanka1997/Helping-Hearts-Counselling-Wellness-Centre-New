@@ -30,6 +30,7 @@ const VIEW_MAP: Record<string, string> = {
   testimonials: '/testimonials',
   faq: '/faq',
   contact: '/contact',
+  guide: '/guide',
   'student-dashboard': '/student/dashboard',
   'lecturer-dashboard': '/lecturer/dashboard',
   'admin-dashboard': '/admin'
@@ -124,7 +125,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'gallery', label: 'Gallery', href: '/gallery' },
     { id: 'testimonials', label: 'Testimonials', href: '/testimonials' },
     { id: 'faq', label: 'FAQ', href: '/faq' },
-    { id: 'contact', label: 'Contact', href: '/contact' }
+    { id: 'contact', label: 'Contact', href: '/contact' },
+    { id: 'guide', label: '📥 Free Guide', href: '/guide', isFeatured: true }
   ];
 
   const handleNavClick = (viewId: string) => {
@@ -279,10 +281,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2.5 2xl:gap-3 shrink-0">
-            {navLinks.map((link) => {
+          {navLinks.map((link) => {
               const Icon = (link as any).icon;
               const isDashboard = (link as any).isDashboard;
+              const isFeatured = (link as any).isFeatured;
               const active = isLinkActive(link);
+
+              if (isFeatured) {
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => handleNavClick(link.id)}
+                    className="px-3 xl:px-4 py-1.5 rounded-xl text-xs xl:text-sm font-black transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md hover:from-amber-300 hover:to-amber-400 active:scale-95 border border-amber-300 animate-pulse-slow"
+                  >
+                    <span>{link.label}</span>
+                  </button>
+                );
+              }
 
               return (
                 <button
@@ -338,12 +353,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               const isDashboard = (link as any).isDashboard;
               const active = isLinkActive(link);
 
+              const isFeatured = (link as any).isFeatured;
+
               return (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
                   className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2.5 cursor-pointer ${
-                    isDashboard
+                    isFeatured
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black shadow-md border border-amber-300'
+                      : isDashboard
                       ? active
                         ? 'bg-amber-400 text-slate-950 font-black shadow-xs'
                         : 'bg-teal-900 text-amber-300 font-bold border border-teal-700 shadow-xs'

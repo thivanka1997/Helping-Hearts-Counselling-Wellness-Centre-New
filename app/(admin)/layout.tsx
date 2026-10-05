@@ -16,6 +16,7 @@ const ADMIN_TABS = [
   { id: 'ATTENDANCE', label: 'Attendance', href: '/admin/attendance' },
   { id: 'CMS', label: 'Site CMS', href: '/admin/cms' },
   { id: 'MEDIA', label: 'Media Library', href: '/admin/media' },
+  { id: 'LEADS', label: 'Marketing Leads', href: '/admin/leads' },
   { id: 'DATABASE', label: 'Database Docs', href: '/admin/database' },
   { id: 'USER_GUIDE', label: '?? User Guide (PDF)', href: '/admin/user-guide' }
 ];
