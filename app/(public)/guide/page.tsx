@@ -116,10 +116,6 @@ export default function FreeGuideLandingPage() {
 
         {/* Brand Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-950/80 border border-teal-700 text-teal-300 text-xs font-bold shadow-xs">
-            <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-            <span>Helping Hearts Counselling & Wellness Centre (Pvt) Ltd</span>
-          </div>
 
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
             Pathways to Becoming a Psychological Counselor
@@ -129,7 +125,7 @@ export default function FreeGuideLandingPage() {
           </h1>
 
           <p className="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            A comprehensive practical guide crafted by our clinical faculty under Directress{' '}
+            A comprehensive practical guide crafted by our counselling faculty under Directress{' '}
             <strong className="text-amber-300">Miss Ramsina Farvin Jelaldeen</strong>. Explore core counselling skills,
             therapeutic ethics, active listening techniques, and psychology career pathways.
           </p>
@@ -160,7 +156,7 @@ export default function FreeGuideLandingPage() {
                       PDF GUIDE
                     </div>
                     <div>
-                      <h2 className="font-black text-white text-sm">Official Clinical Study Handbook</h2>
+                      <h2 className="font-black text-white text-sm">Official Counselling Study Handbook</h2>
                       <p className="text-[11px] text-teal-300">Helping Hearts Academic Publication</p>
                     </div>
                   </div>
@@ -168,27 +164,47 @@ export default function FreeGuideLandingPage() {
                   <div className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-teal-800/40">
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Therapeutic Rapport:</strong> Carl Rogers model (Unconditional Positive Regard & Empathy).</span>
+                      <span>Introduction to counselling</span>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Attending Micro-Skills:</strong> The SOLER framework and open Socratic questioning.</span>
+                      <span>Identification of mental illnesses</span>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Psychological Distress:</strong> Identifying signs of anxiety, depression & trauma.</span>
+                      <span>Counselling skills training</span>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Career Blueprint:</strong> How to launch a career in Counselling Psychology in Sri Lanka.</span>
+                      <span>Awareness of counselling ethics</span>
                     </div>
 
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span><strong>Bonus Invitation:</strong> Free Service Letter Workshop participation opportunity.</span>
+                      <span>Psychotherapist training</span>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>Counseling interventions for Addictions</span>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>Training on caring for inpatient mental patients</span>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>How to conduct counselling while resolving language problems that arise during counselling</span>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>Awareness of the laws required during counselling and much more...</span>
                     </div>
                   </div>
                 </div>
