@@ -15,7 +15,7 @@ async function sendToGoogleSheet(leadData: {
   downloaded: boolean;
   submittedAt: string;
 }) {
-  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL;
+  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbyPXXMaOAXve8XZIQ_5h9oEZHd8yzsmTdTFvSONHJKVDfbyNjIA67C8-Ie6Et2_2sra2A/exec';
   if (!webhookUrl || webhookUrl.includes('YOUR_SCRIPT_ID_HERE')) {
     console.warn('[Sheets] GOOGLE_SHEET_WEBHOOK_URL not configured — skipping.');
     return;
