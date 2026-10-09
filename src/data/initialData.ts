@@ -852,6 +852,28 @@ Practicing diaphragmatic breathing alongside sensory grounding signaling safety 
 
 export const initialGallery: GalleryMedia[] = [
   {
+    id: 'gal-promo-video',
+    title: 'Helping Hearts Official Introduction & Promotional Video',
+    type: 'YOUTUBE_VIDEO',
+    url: 'https://drive.google.com/file/d/1noKss0u6jMGuXkw0ZD-Kpp2cx8-Td1G0/preview',
+    thumbnailUrl: '/assets/images/helping_hearts_hero_1786205130552.jpg',
+    category: 'Training',
+    folder: 'Promotion & Sanctuary Tour',
+    caption: 'Official promotional introduction video showcasing our Wattala counselling sanctuary, expert clinical panels, and accredited diploma courses.',
+    date: '2026-08-15',
+    items: [
+      {
+        id: 'promo-vid-item-1',
+        type: 'YOUTUBE_VIDEO',
+        url: 'https://drive.google.com/file/d/1noKss0u6jMGuXkw0ZD-Kpp2cx8-Td1G0/preview',
+        thumbnailUrl: '/assets/images/helping_hearts_hero_1786205130552.jpg',
+        folder: 'Promotion & Sanctuary Tour',
+        title: 'Helping Hearts Promotional Video',
+        caption: 'Discover compassionate counselling & professional psychology education.'
+      }
+    ]
+  },
+  {
     id: 'gal-free-sessions',
     title: 'Free Sessions: Community Mental Health & Counselling Workshops',
     type: 'ALBUM',

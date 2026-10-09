@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Calendar, GraduationCap, ShieldCheck, CheckCircle2, Users, Award, BookOpen, ArrowRight, Phone, Video, Clock, Sparkles, MessageSquare, MapPin, ChevronRight, Target, Eye, Compass, Star, Quote } from 'lucide-react';
+import { Heart, Calendar, GraduationCap, ShieldCheck, CheckCircle2, Users, Award, BookOpen, ArrowRight, Phone, Video, Play, Clock, Sparkles, MessageSquare, MapPin, ChevronRight, Target, Eye, Compass, Star, Quote } from 'lucide-react';
 import { CounsellingService, Course, Lecturer, EventWorkshop, BlogArticle, GalleryMedia, Testimonial, SiteSettings } from '@/src/types';
 
 interface HomeProps {
@@ -7,6 +7,7 @@ interface HomeProps {
   onOpenAppointment: () => void;
   onOpenRegister: () => void;
   onSelectCourse: (courseId: string) => void;
+  onOpenVideo?: () => void;
   services: CounsellingService[];
   courses: Course[];
   lecturers: Lecturer[];
@@ -22,6 +23,7 @@ export const Home: React.FC<HomeProps> = ({
   onOpenAppointment,
   onOpenRegister,
   onSelectCourse,
+  onOpenVideo,
   services,
   courses,
   lecturers,
@@ -118,6 +120,18 @@ export const Home: React.FC<HomeProps> = ({
                   <GraduationCap className="w-5 h-5 text-amber-300" />
                   <span>{heroCtaSecondary}</span>
                 </button>
+
+                {onOpenVideo && (
+                  <button
+                    onClick={onOpenVideo}
+                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 hover:text-amber-200 font-bold text-base border border-amber-400/40 backdrop-blur-xs shadow-lg transition-all flex items-center justify-center gap-2.5 group"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-amber-400 text-teal-950 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                    </div>
+                    <span>Watch Promo Video</span>
+                  </button>
+                )}
               </div>
 
               {/* Trust Badges */}
@@ -161,32 +175,117 @@ export const Home: React.FC<HomeProps> = ({
 
             {/* Right Feature Card */}
             <div className="lg:col-span-5">
-              <div className="relative rounded-3xl overflow-hidden border border-teal-700/50 shadow-2xl group">
+              <div 
+                onClick={onOpenVideo}
+                className={`relative rounded-3xl overflow-hidden border border-teal-700/50 shadow-2xl group ${onOpenVideo ? 'cursor-pointer' : ''}`}
+              >
                 <img
                   src="/assets/images/helping_hearts_hero_1786205130552.jpg"
                   alt="Helping Hearts Centre Interior"
                   className="w-full h-[380px] object-cover group-hover:scale-105 transition-transform duration-500"
                 />
+
+                {/* Interactive Play Badge Overlay */}
+                {onOpenVideo && (
+                  <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/10 transition-colors flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-400 text-teal-950 flex items-center justify-center shadow-2xl shadow-amber-400/50 group-hover:scale-110 transition-transform">
+                      <Play className="w-8 h-8 sm:w-10 sm:h-10 fill-current ml-1 text-teal-950" />
+                    </div>
+                  </div>
+                )}
                 
 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent p-6 flex flex-col justify-end">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                   <div className="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700/80 text-xs space-y-2">
                     <div className="flex items-center justify-between text-amber-300 font-bold">
                       <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-teal-400" /> Professional Environment
+                        <ShieldCheck className="w-4 h-4 text-teal-400" /> Professional Sanctuary
                       </span>
                       <span className="bg-teal-900 text-teal-200 px-2 py-0.5 rounded text-[10px] uppercase font-mono">
                         Physical & Online
                       </span>
                     </div>
                     <p className="text-slate-300 text-xs">
-                      Wattala sanctuary (Thelangapatha Road) & secure HD video sessions available for remote clients worldwide.
+                      Wattala sanctuary (Thelangapatha Road) & secure HD video sessions. Click to watch our introduction.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* PROMOTIONAL VIDEO SPOTLIGHT SECTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-10 border border-teal-700/60 shadow-2xl text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            {/* Left Description */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Marketing & Sanctuary Spotlight</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Discover Helping Hearts <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-amber-300">
+                  Counselling & Wellness
+                </span>
+              </h2>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Take an exclusive video tour of our dedicated counselling sanctuary in Wattala. Experience our calm, confidential healing spaces and learn about our evidence-based psychological support and accredited diploma pathways.
+              </p>
+              
+              <div className="space-y-2.5 pt-2">
+                <div className="flex items-center gap-2.5 text-xs text-teal-200 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                  <span>Licensed psychologists & senior psychiatry panel</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-teal-200 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                  <span>100% confidential physical sanctuary & HD online therapy</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-teal-200 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                  <span>In collaboration with CIMS Campus educational programs</span>
+                </div>
+              </div>
+
+              <div className="pt-3 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={onOpenAppointment}
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-teal-950 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Book a Session</span>
+                </button>
+                {onOpenVideo && (
+                  <button
+                    onClick={onOpenVideo}
+                    className="px-5 py-2.5 rounded-xl bg-teal-800 hover:bg-teal-700 text-white font-semibold text-xs sm:text-sm border border-teal-600/60 transition-all flex items-center gap-2"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>Watch in Fullscreen</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Right Embedded Player */}
+            <div className="lg:col-span-7">
+              <div className="relative rounded-2xl overflow-hidden border border-teal-600/50 shadow-2xl bg-black aspect-video flex items-center justify-center">
+                <iframe
+                  src="https://drive.google.com/file/d/1noKss0u6jMGuXkw0ZD-Kpp2cx8-Td1G0/preview"
+                  title="Helping Hearts Promotional Video"
+                  className="w-full h-full border-0"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
