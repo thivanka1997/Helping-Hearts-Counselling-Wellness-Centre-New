@@ -162,50 +162,21 @@ export default function FreeGuideLandingPage() {
                   </div>
 
                   <div className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-teal-800/40">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Introduction to counselling</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Identification of mental illnesses</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Counselling skills training</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Awareness of counselling ethics</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Psychotherapist training</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Counseling interventions for Addictions</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Training on caring for inpatient mental patients</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>How to conduct counselling while resolving language problems that arise during counselling</span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>Awareness of the laws required during counselling and much more...</span>
-                    </div>
+                    {[
+                      '1. Role of the Psychological Counselor',
+                      '2. What Skills Are Required?',
+                      '3. Who Can Study Counselling?',
+                      '4. What to Look for in a Training Programme?',
+                      '5. Training vs Self-Learning',
+                      '6. Ethics and Professional Boundaries',
+                      '7. Possible Areas of Practice',
+                      '8. About Helping Hearts Counselling & Wellness Centre',
+                    ].map((topic) => (
+                      <div key={topic} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <span>{topic}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -222,8 +193,7 @@ export default function FreeGuideLandingPage() {
                   />
                   <div>
                     <p className="font-bold text-slate-200">Miss Ramsina Farvin Jelaldeen</p>
-                    <p className="text-[11px] text-amber-300">Directress & Consultant Psychotherapist</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">APA (USA) • ACCPH (UK) • ANZMH (Aus/NZ)</p>
+                    <p className="text-[11px] text-amber-300">Directress & Counselling Psychotherapist</p>
                   </div>
                 </div>
               </div>
