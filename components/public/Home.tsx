@@ -1,4 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
+import heroCounsellingImg from '@/public/assets/images/hero-counselling-session.webp';
+import emblemImg from '@/public/assets/images/helping-hearts-emblem.webp';
 import { Heart, Calendar, GraduationCap, ShieldCheck, CheckCircle2, Users, Award, BookOpen, ArrowRight, Phone, Video, Play, Clock, Sparkles, MessageSquare, MapPin, ChevronRight, Target, Eye, Compass, Star, Quote } from 'lucide-react';
 import { CounsellingService, Course, Lecturer, EventWorkshop, BlogArticle, GalleryMedia, Testimonial, SiteSettings } from '@/src/types';
 
@@ -175,39 +178,69 @@ export const Home: React.FC<HomeProps> = ({
 
             {/* Right Feature Card */}
             <div className="lg:col-span-5">
-              <div 
+              <div
+                role={onOpenVideo ? 'button' : undefined}
+                tabIndex={onOpenVideo ? 0 : undefined}
+                aria-label={onOpenVideo ? 'Watch the Helping Hearts introduction video' : undefined}
                 onClick={onOpenVideo}
-                className={`relative rounded-3xl overflow-hidden border border-teal-700/50 shadow-2xl group ${onOpenVideo ? 'cursor-pointer' : ''}`}
+                onKeyDown={(e) => {
+                  if (onOpenVideo && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    onOpenVideo();
+                  }
+                }}
+                className={`relative h-[400px] sm:h-[440px] rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-2xl shadow-black/40 group outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${onOpenVideo ? 'cursor-pointer' : ''}`}
               >
-                <img
-                  src="/assets/images/helping_hearts_hero_1786205130552.jpg"
-                  alt="Helping Hearts Centre Interior"
-                  className="w-full h-[380px] object-cover group-hover:scale-105 transition-transform duration-500"
+                <Image
+                  src={heroCounsellingImg}
+                  alt="A Helping Hearts counsellor listening to a client during a private one-to-one session"
+                  fill
+                  preload
+                  placeholder="blur"
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover object-[center_40%] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 />
 
-                {/* Interactive Play Badge Overlay */}
+                {/* Cinematic readability gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-slate-950/10 pointer-events-none" />
+
+                {/* Location chip */}
+                <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/55 backdrop-blur-md ring-1 ring-white/15 text-[11px] font-semibold text-white/90">
+                  <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                  Wattala · Thelangapatha Road
+                </div>
+
+                {/* Play button with soft pulse */}
                 {onOpenVideo && (
-                  <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/10 transition-colors flex items-center justify-center">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-400 text-teal-950 flex items-center justify-center shadow-2xl shadow-amber-400/50 group-hover:scale-110 transition-transform">
-                      <Play className="w-8 h-8 sm:w-10 sm:h-10 fill-current ml-1 text-teal-950" />
-                    </div>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="absolute w-20 h-20 rounded-full bg-amber-400/40 animate-ping [animation-duration:2.4s]" />
+                    <span className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-400 text-teal-950 flex items-center justify-center shadow-2xl shadow-amber-500/40 ring-4 ring-white/20 transition-transform duration-300 group-hover:scale-110">
+                      <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-current ml-1" />
+                    </span>
                   </div>
                 )}
-                
 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                  <div className="bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700/80 text-xs space-y-2">
-                    <div className="flex items-center justify-between text-amber-300 font-bold">
-                      <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-teal-400" /> Professional Sanctuary
+                {/* Caption */}
+                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 space-y-3 pointer-events-none">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-300">
+                    <ShieldCheck className="w-4 h-4 text-teal-300" />
+                    Professional Sanctuary
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-white leading-snug">
+                    A calm, confidential space to talk and heal
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 ring-1 ring-white/15 text-white/90">
+                      <Users className="w-3.5 h-3.5 text-teal-300" /> In-person sessions
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 ring-1 ring-white/15 text-white/90">
+                      <Video className="w-3.5 h-3.5 text-teal-300" /> Secure HD online
+                    </span>
+                    {onOpenVideo && (
+                      <span className="inline-flex items-center gap-1 text-amber-300 ml-auto">
+                        Watch introduction <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
-                      <span className="bg-teal-900 text-teal-200 px-2 py-0.5 rounded text-[10px] uppercase font-mono">
-                        Physical & Online
-                      </span>
-                    </div>
-                    <p className="text-slate-300 text-xs">
-                      Wattala sanctuary (Thelangapatha Road) & secure HD video sessions. Click to watch our introduction.
-                    </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -281,6 +314,7 @@ export const Home: React.FC<HomeProps> = ({
                   src="https://drive.google.com/file/d/1noKss0u6jMGuXkw0ZD-Kpp2cx8-Td1G0/preview"
                   title="Helping Hearts Promotional Video"
                   className="w-full h-full border-0"
+                  loading="lazy"
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowFullScreen
                 />
@@ -323,11 +357,16 @@ export const Home: React.FC<HomeProps> = ({
           </div>
 
           <div className="lg:col-span-5">
-            <img
-              src="/assets/images/counselling_session_1786205143705.jpg"
-              alt="Counselling Session"
-              className="rounded-2xl shadow-md border border-slate-200 object-cover w-full h-64 sm:h-80"
-            />
+            <div className="relative h-64 sm:h-80 rounded-2xl bg-white border border-teal-100 shadow-md overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,184,166,0.14),transparent_65%)]" />
+              <Image
+                src={emblemImg}
+                alt="Helping Hearts Counselling & Wellness Centre emblem"
+                placeholder="blur"
+                sizes="(min-width: 1024px) 18rem, 14rem"
+                className="relative w-48 h-48 sm:w-64 sm:h-64 object-cover rounded-full shadow-xl shadow-teal-900/15 ring-8 ring-teal-50"
+              />
+            </div>
           </div>
         </div>
 
