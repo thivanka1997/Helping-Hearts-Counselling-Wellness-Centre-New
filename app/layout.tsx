@@ -1,5 +1,12 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  display: 'swap',
+});
 import { Providers } from '@/components/providers/Providers';
 
 export const metadata: Metadata = {
@@ -16,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
       <body
         suppressHydrationWarning
         className="antialiased min-h-screen bg-slate-100 text-slate-800 flex flex-col font-sans selection:bg-teal-800 selection:text-white"

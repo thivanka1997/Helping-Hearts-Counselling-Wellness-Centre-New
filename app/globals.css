@@ -1,12 +1,69 @@
 @import "tailwindcss";
 
+/*
+ * Helping Hearts brand theme — "Eucalyptus & Warm Sand"
+ *
+ * The whole site uses Tailwind's teal / amber / slate classes, so the brand
+ * palette is defined by re-tuning those scales here. Change a value once and
+ * every page follows.
+ *
+ *   teal   → Eucalyptus: calm, muted sage-green (primary brand colour)
+ *   amber  → Warm Sand: soft honey-gold (accent, calls to action)
+ *   slate  → Ink: neutral greys with a gentle green undertone
+ */
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Eucalyptus */
+  --color-teal-50: oklch(0.977 0.013 166);
+  --color-teal-100: oklch(0.948 0.028 166);
+  --color-teal-200: oklch(0.898 0.048 167);
+  --color-teal-300: oklch(0.826 0.068 168);
+  --color-teal-400: oklch(0.73 0.082 170);
+  --color-teal-500: oklch(0.632 0.086 172);
+  --color-teal-600: oklch(0.545 0.078 174);
+  --color-teal-700: oklch(0.465 0.068 176);
+  --color-teal-800: oklch(0.392 0.058 178);
+  --color-teal-900: oklch(0.33 0.048 180);
+  --color-teal-950: oklch(0.245 0.038 182);
+
+  /* Warm Sand */
+  --color-amber-50: oklch(0.985 0.014 84);
+  --color-amber-100: oklch(0.963 0.034 84);
+  --color-amber-200: oklch(0.925 0.062 82);
+  --color-amber-300: oklch(0.875 0.09 80);
+  --color-amber-400: oklch(0.82 0.11 77);
+  --color-amber-500: oklch(0.755 0.12 72);
+  --color-amber-600: oklch(0.655 0.12 64);
+  --color-amber-700: oklch(0.545 0.105 58);
+  --color-amber-800: oklch(0.465 0.088 56);
+  --color-amber-900: oklch(0.4 0.072 56);
+  --color-amber-950: oklch(0.28 0.05 56);
+
+  /* Ink neutrals */
+  --color-slate-50: oklch(0.984 0.003 190);
+  --color-slate-100: oklch(0.967 0.006 190);
+  --color-slate-200: oklch(0.928 0.011 192);
+  --color-slate-300: oklch(0.868 0.017 194);
+  --color-slate-400: oklch(0.704 0.027 196);
+  --color-slate-500: oklch(0.554 0.031 198);
+  --color-slate-600: oklch(0.446 0.03 200);
+  --color-slate-700: oklch(0.372 0.03 202);
+  --color-slate-800: oklch(0.279 0.028 204);
+  --color-slate-900: oklch(0.212 0.026 206);
+  --color-slate-950: oklch(0.15 0.022 208);
+}
+
 :root {
-  --background: #f8fafc;
-  --foreground: #1e293b;
+  --background: oklch(0.984 0.004 160);
+  --foreground: oklch(0.279 0.028 204);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.015em;
 }
